@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroFuel | Plataforma de Rendimiento y Nutrición</title>
+    <meta name="description"
+        content="Plataforma de gestión nutricional y rendimiento para nadadores de velocidad (50-100m).">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Background Animated Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"></div>
+
+    <!-- Auth Modal (Visible by default until auth resolves) -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <h2>Acceso HydroFuel</h2>
+            <div id="auth-form-container">
+                <div class="auth-tabs"
+                    style="display:flex; margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <button id="tab-login" class="auth-tab active"
+                        style="flex:1; padding:10px; background:none; border:none; color:var(--brand-primary); border-bottom: 2px solid var(--brand-primary); cursor:pointer; font-weight:600;">Iniciar
+                        Sesión</button>
+                    <button id="tab-register" class="auth-tab"
+                        style="flex:1; padding:10px; background:none; border:none; color:var(--text-muted); border-bottom: 2px solid transparent; cursor:pointer; font-weight:600;">Registrarse</button>
+                </div>
+
+                <div id="view-login">
+                    <input type="email" id="auth-email-login" placeholder="Correo electrónico" autocomplete="email"
+                        style="margin-bottom: 8px;">
+                    <input type="password" id="auth-pwd-login" placeholder="Contraseña" autocomplete="current-password">
+                    <button class="btn-primary" id="btn-login"
+                        style="width:100%; justify-content:center; margin-top:1rem;">Entrar</button>
+                    <a href="#" id="btn-forgot-pwd"
+                        style="display:block; text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:12px; text-decoration:none;">¿Olvidaste
+                        tu contraseña?</a>
+                </div>
+
+                <div id="view-register" class="hidden">
+                    <input type="email" id="auth-email-register" placeholder="Correo electrónico" autocomplete="email"
+                        style="margin-bottom: 8px;">
+                    <input type="password" id="auth-pwd-register" placeholder="Contraseña (Mínimo 6 caracteres)"
+                        autocomplete="new-password">
+                    <button class="btn-secondary" id="btn-register"
+                        style="width:100%; margin-top:1rem; border-color:var(--brand-accent); color:var(--brand-accent);">Crear
+                        Cuenta</button>
+                </div>
+
+                <div style="text-align:center; margin:1rem 0; color:var(--text-muted);">o</div>
+                <button class="btn-ghost" id="btn-guest" style="width:100%;">Continuar como Invitado y Probar</button>
+            </div>
+            <div id="auth-success-msg" class="hidden" style="text-align:center; color:#10b981;">
+                ¡Sesión Iniciada Correctamente!
+            </div>
+        </div>
+    </div>
+
+    <main class="container">
+        <header class="app-header glass-panel">
+            <div class="logo-container">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+                    <path d="M2 12h4l3-9 5 18 3-9h5" />
+                </svg>
+                <h1 class="title">Hydro<span class="highlight">Fuel</span></h1>
+            </div>
+            <p class="subtitle">Gestión de nutrición y recuperación deportiva avanzada (50m - 100m)</p>
+            <div id="user-profile-badge" class="hidden"
+                style="align-self: flex-end; font-size: 0.9rem; margin-top:-2rem; color: var(--brand-primary); cursor:pointer;">
+                👤 <span id="user-email-display">Usuario</span> (Salir)
+            </div>
+        </header>
+
+        <section class="form-section glass-panel" id="input-section">
+            <form id="nutrition-form">
+
+                <!-- Datos Personales -->
+                <div class="form-group-section">
+                    <h2 class="section-title"><span class="step-badge">1</span> Perfil del Nadador</h2>
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label for="age">Edad (años)</label>
+                            <input type="number" id="age" name="age" min="12" max="60" required placeholder="Ej: 20">
+                        </div>
+                        <div class="input-group">
+                            <label for="gender">Género Fisiológico</label>
+                            <select id="gender" name="gender" required>
+                                <option value="" disabled selected>Seleccionar...</option>
+                                <option value="m">Masculino</option>
+                                <option value="f">Femenino</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="weight">Peso (kg)</label>
+                            <input type="number" id="weight" name="weight" min="40" max="150" step="0.1" required
+                                placeholder="Ej: 75.5">
+                        </div>
+                        <div class="input-group">
+                            <label for="height">Altura (cm)</label>
+                            <input type="number" id="height" name="height" min="140" max="220" required
+                                placeholder="Ej: 180">
+                        </div>
+                        <div class="input-group">
+                            <label for="body-type">Somatotipo (Constitución)</label>
+                            <select id="body-type" name="body-type" required>
+                                <option value="mesomorph" selected>Mesomorfo (Atlético)</option>
+                                <option value="ectomorph">Ectomorfo (Delgado)</option>
+                                <option value="endomorph">Endomorfo (Ancho)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="body-fat">% Grasa Corporal <span style="font-size:0.8em;opacity:0.7;">(Mejora
+                                    precisión TMB)</span></label>
+                            <input type="number" id="body-fat" name="body-fat" min="3" max="40" step="0.1"
+                                placeholder="Ej: 12.5 (Opcional)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles Deportivos -->
+                <div class="form-group-section">
+                    <h2 class="section-title"><span class="step-badge">2</span> Especialización</h2>
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label for="main-stroke">Estilo Principal</label>
+                            <select id="main-stroke" name="main-stroke" required>
+                                <option value="freestyle" selected>Crol (Libre)</option>
+                                <option value="backstroke">Espalda</option>
+                                <option value="butterfly">Mariposa (+ Gasto)</option>
+                                <option value="breaststroke">Braza (+ Gasto)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="specialization">Distancia Especialidad</label>
+                            <select id="specialization" name="specialization" required>
+                                <option value="50m" selected>50m (Potencia Aláctica)</option>
+                                <option value="100m">100m (Tolerancia Lactato)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vida Diaria -->
+                <div class="form-group-section">
+                    <h2 class="section-title"><span class="step-badge">3</span> Carga Vital (NEAT)</h2>
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label for="classes-hours">Horas de clases/estudio/trabajo sentado</label>
+                            <input type="number" id="classes-hours" name="classes-hours" min="0" max="16" required
+                                placeholder="Ej: 6">
+                        </div>
+                        <div class="input-group">
+                            <label for="commute">Desplazamiento</label>
+                            <select id="commute" name="commute" required>
+                                <option value="sedentary">Motorizado (Sedentario)</option>
+                                <option value="active">Caminando / Bici</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="neat-activity">Actividad Dinámica Diaria</label>
+                            <select id="neat-activity" name="neat-activity" required>
+                                <option value="low">Sentado casi todo el día</option>
+                                <option value="moderate" selected>Movimiento Ligero</option>
+                                <option value="high">Activo Física Mente</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="sleep-hours">Horas de Sueño hoy (Recuperación)</label>
+                            <input type="number" id="sleep-hours" name="sleep-hours" min="4" max="12" step="0.5"
+                                required placeholder="Ej: 7.5">
+                        </div>
+                        <div class="input-group">
+                            <label for="stress-level">Nivel Estrés Mental/Académico</label>
+                            <select id="stress-level" name="stress-level" required>
+                                <option value="low">Bajo / Relax</option>
+                                <option value="moderate" selected>Medio (Normal)</option>
+                                <option value="high">Alto (Exámenes/Ansiedad)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Planificador del Día -->
+                <div class="form-group-section">
+                    <h2 class="section-title"><span class="step-badge">4</span> Entrenamiento y Estado del Día</h2>
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label for="pool-sessions">Sesiones de Agua / semana</label>
+                            <input type="number" id="pool-sessions" name="pool-sessions" min="1" max="14" required
+                                placeholder="Ej: 6" value="6">
+                        </div>
+                        <div class="input-group">
+                            <label for="gym-sessions">Sesiones Gym/Fuerza / semana</label>
+                            <input type="number" id="gym-sessions" name="gym-sessions" min="0" max="7" required
+                                placeholder="Ej: 3" value="3">
+                        </div>
+                        <div class="input-group">
+                            <label for="avg-volume">Volumen Promedio Sessión</label>
+                            <select id="avg-volume" name="avg-volume" required>
+                                <option value="2000">Calidad/Velocidad (< 3000m)</option>
+                                <option value="4000" selected>Medio (3000m - 5000m)</option>
+                                <option value="6000">Alto (Base > 5000m)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="day-intensity">Estado de HOY</label>
+                            <select id="day-intensity" name="day-intensity" required>
+                                <option value="water" selected>Entreno (Solo Agua / Normal)</option>
+                                <option value="fire">Día "Fire" (Agua + Gym / Extremo)</option>
+                                <option value="competition">Día de Competición 🏆</option>
+                                <option value="rest">Día de Estudio/Descanso Off-Pool 🧠</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="rpe">RPE Diario Percibido (1-10)</label>
+                            <input type="number" id="rpe" name="rpe" min="1" max="10" required placeholder="Ej: 8"
+                                value="8">
+                        </div>
+
+                        <div class="input-group" id="active-recovery-group"
+                            style="display: none; flex-direction: column; justify-content: center; margin-top: 1rem;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="active-recovery" name="active-recovery"
+                                    style="width: auto; margin-right: 10px; transform: scale(1.2);">
+                                <span>¿Incluirás Recuperación Activa hoy? (20m movilidad)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Módulo de Competición (Oculto si no es Día Comp) -->
+                    <div id="competition-events-section" class="glass-panel"
+                        style="display:none; margin-top: 24px; padding:20px; border-color:var(--brand-accent);">
+                        <h3 style="color:var(--brand-accent); font-family:var(--font-heading); margin-bottom:12px;">
+                            Gestor de Jornada (Añade pruebas)</h3>
+                        <div class="events-selector">
+                            <button class="btn-ghost add-event-btn" data-event="50m Libre">+ 50m Lib</button>
+                            <button class="btn-ghost add-event-btn" data-event="100m Libre">+ 100m Lib</button>
+                            <button class="btn-ghost add-event-btn" data-event="50m Mariposa">+ 50m Mar</button>
+                            <button class="btn-ghost add-event-btn" data-event="100m Mariposa">+ 100m Mar</button>
+                            <button class="btn-ghost add-event-btn" data-event="50m Braza">+ 50m Bra</button>
+                            <button class="btn-ghost add-event-btn" data-event="100m Braza">+ 100m Bra</button>
+                            <button class="btn-ghost add-event-btn" data-event="50m Espalda">+ 50m Esp</button>
+                            <button class="btn-ghost add-event-btn" data-event="Relevos Cortos">+ Relevos</button>
+                        </div>
+                        <div id="events-list" style="margin-top: 16px; display:flex; flex-wrap:wrap; gap:8px;">
+                            <p style="color:var(--text-muted); font-size:0.9rem;">Ninguna prueba añadida aún.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submit-container">
+                    <button type="submit" class="btn-primary" id="calculate-btn">
+                        <span>Generar Plan Nutricional</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="btn-icon">
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Resultados -->
+        <section class="results-section glass-panel hidden" id="results-section">
+            <div class="results-header">
+                <h2 class="results-title">Dashboard de Rendimiento</h2>
+                <div style="display:flex; gap: 10px;">
+                    <button class="btn-icon-only" id="export-pdf-btn" title="Exportar a PDF (Imprimir)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </button>
+                    <button class="btn-icon-only" id="reset-btn" title="Recalcular">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Rings y Semáforo -->
+            <div class="dashboard-metrics" style="display:flex; gap:20px; margin-bottom: 24px; flex-wrap:wrap;">
+
+                <div class="result-card" style="flex:1; min-width:250px;">
+                    <h3>Cumplimiento (Previo)</h3>
+                    <div class="rings-container">
+                        <div class="ring-wrap" title="Déficit calórico/estrés restan energía base">
+                            <svg class="progress-ring" width="90" height="90">
+                                <circle class="ring-bg" stroke="rgba(255,255,255,0.1)" stroke-width="6"
+                                    fill="transparent" r="40" cx="45" cy="45" />
+                                <circle class="ring-progress" id="ring-energy" stroke="var(--brand-primary)"
+                                    stroke-width="6" fill="transparent" r="40" cx="45" cy="45"
+                                    stroke-dasharray="0 251.2" />
+                            </svg>
+                            <div class="ring-content">
+                                <span class="ring-val" id="ring-energy-val">0%</span>
+                                <span class="ring-label">Energía</span>
+                            </div>
+                        </div>
+                        <div class="ring-wrap" title="Falta de sueño o alta intensidad reducen la reparación celular">
+                            <svg class="progress-ring" width="90" height="90">
+                                <circle class="ring-bg" stroke="rgba(255,255,255,0.1)" stroke-width="6"
+                                    fill="transparent" r="40" cx="45" cy="45" />
+                                <circle class="ring-progress" id="ring-repair" stroke="var(--brand-accent)"
+                                    stroke-width="6" fill="transparent" r="40" cx="45" cy="45"
+                                    stroke-dasharray="0 251.2" />
+                            </svg>
+                            <div class="ring-content">
+                                <span class="ring-val" id="ring-repair-val">0%</span>
+                                <span class="ring-label">Reparación</span>
+                            </div>
+                        </div>
+                        <div class="ring-wrap" title="Objetivo hídrico de hoy">
+                            <svg class="progress-ring" width="90" height="90">
+                                <circle class="ring-bg" stroke="rgba(255,255,255,0.1)" stroke-width="6"
+                                    fill="transparent" r="40" cx="45" cy="45" />
+                                <circle class="ring-progress" id="ring-hydration" stroke="#0099FF" stroke-width="6"
+                                    fill="transparent" r="40" cx="45" cy="45" stroke-dasharray="0 251.2" />
+                            </svg>
+                            <div class="ring-content">
+                                <span class="ring-val" id="ring-hydration-val">0%</span>
+                                <span class="ring-label">Hidratación</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card"
+                    style="flex:1; min-width:250px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                    <h3>Disposición SNC Mañana</h3>
+                    <div id="traffic-light-status" class="status-indicator"></div>
+                    <p id="traffic-light-msg" style="font-size:0.9rem; color:var(--text-muted); margin-top:12px;"></p>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Macros Card -->
+                <div class="result-card highlight-card">
+                    <h3>Presupuesto Energético Diario</h3>
+                    <div class="big-number" id="res-calories">0 <span class="unit">kcal</span></div>
+                    <div class="macros-breakdown" id="res-macros-chart">
+                        <!-- Chart generated via JS -->
+                    </div>
+                    <div class="macros-labels">
+                        <div class="macro-label">
+                            <div class="dot dot-carbs"></div> CH: <span id="res-carbs">0g</span>
+                        </div>
+                        <div class="macro-label">
+                            <div class="dot dot-protein"></div> PRO: <span id="res-protein">0g</span>
+                        </div>
+                        <div class="macro-label">
+                            <div class="dot dot-fats"></div> GRA: <span id="res-fats">0g</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tiempos y Descanso Card -->
+                <div class="result-card">
+                    <h3>Pautas de Entorno</h3>
+                    <ul class="tips-list" id="res-recovery">
+                        <!-- Populated via JS -->
+                    </ul>
+                </div>
+
+                <!-- Suplementación Card -->
+                <div class="result-card full-width">
+                    <h3>Stacks Suplementarios (Velocista)</h3>
+                    <div class="supplements-grid" id="res-supplements">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Timing Card -->
+                <div class="result-card full-width">
+                    <h3>Crono-Nutrición y Estrategia</h3>
+                    <div class="timeline" id="res-timing">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Inline safety script: runs BEFORE modules, guarantees the modal is visible -->
+    <script>
+        // Show auth modal immediately — before any Firebase/module loading
+        // This prevents the screen being blank on Safari if modules are slow to load
+        (function () {
+            var modal = document.getElementById('auth-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        })();
+    </script>
+
+    <script type="module" src="js/main.js"
+        onerror="document.getElementById('module-error')?.style.setProperty('display','block')"></script>
+
+    <!-- Shown only if ES modules fail entirely (CSP block, old browser, etc.) -->
+    <div id="module-error"
+        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(7,11,25,0.97); display:none; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:16px; padding:24px; text-align:center;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4M12 16h.01" />
+        </svg>
+        <p style="color:#F2F5FF; font-size:1.1rem; font-weight:600; font-family:sans-serif;">Error al cargar la
+            aplicación</p>
+        <p style="color:#8E9BAE; font-size:0.9rem; font-family:sans-serif;">Por favor, revisa tu conexión y vuelve a
+            intentarlo.</p>
+        <button onclick="location.reload()"
+            style="background:linear-gradient(135deg,#00E5FF,#7000FF); color:white; border:none; padding:12px 28px; border-radius:100px; font-size:1rem; cursor:pointer;">Reintentar</button>
+    </div>
+</body>
+
+</html>
